@@ -2,15 +2,15 @@ console.log("main");
 var dictScopus = {}
 var dictWebOf = {}
 
-var scopus = []
-
-var webOfScience = []
+let scopus = []
+let webOfScience = []
 
 
 fetch("../data/confusion.csv")
   .then((res) => res.text())
   .then((text) => {
-    var data = [["scopus","webOfScience","value"]]
+    console.log(text);
+    var paperdata = [["scopus","webOfScience","value"]]
     var allRows = text.split(/\r?\n|\r/);
     let topline = allRows[0].split(',')
     // console.log(topline);
@@ -28,7 +28,7 @@ fetch("../data/confusion.csv")
         let v = (parseInt(cols[c]) | 0)
         dictScopus[scops] += v
         dictWebOf[topline[c]] += v
-        data.push([cols[0], topline[c], v])
+        paperdata.push([cols[0], topline[c], v])
       }
     }
     for (var [key, _] of Object.entries(dictScopus)) {
@@ -39,10 +39,12 @@ fetch("../data/confusion.csv")
     }
     scopus.sort(function(a, b){return dictScopus[b] - dictScopus[a]}); 
     webOfScience.sort(function(a, b){return dictWebOf[b] - dictWebOf[a]}); 
-    draw(data)
+    draw(paperdata)
   })
   .catch((e) => console.error(e));
 // set the dimensions and margins of the graph
+
+
 const margin = { top: 30, right: 30, bottom: 300, left: 300 },
     width = 950 - margin.left - margin.right,
     height = 3300 - margin.top - margin.bottom;
@@ -56,7 +58,7 @@ const svg = d3.select("#my_dataviz")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Labels of row and columns
-var draw = function (data) {
+var draw = function (paperdata) {
     const x = d3.scaleBand()
         .range([0, width])
         .domain(scopus)
@@ -93,7 +95,7 @@ var draw = function (data) {
     //d3.csv("data/heat.csv").then(function (data) {
 
     svg.selectAll("rect")
-        .data(data)//, function (d) { return d. + ':' + d.webOfScience; })
+        .data(paperdata)//, function (d) { return d. + ':' + d.webOfScience; })
         .enter()
         .append("rect")
         .attr("x", function (d) { return x(d[0]) })
