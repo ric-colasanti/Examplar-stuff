@@ -66,14 +66,18 @@ d3.csv("data/heat.csv", function(data){
   hdata.push([data.scopus,data.webOfScience,data.value])
 
 }).then(function(){
-    scopus.sort(function(a, b){return dictScopus[b] - dictScopus[a]}); 
-    webOfScience.sort(function(a, b){return dictWebOf[b] - dictWebOf[a]}); 
-    console.log(dictWebOf);
-    draw(hdata);
+  scopus.sort(function(a, b){return dictScopus[b] - dictScopus[a]}); 
+  webOfScience.sort(function(a, b){return dictWebOf[b] - dictWebOf[a]}); 
+  draw(hdata);
 });
 
 
+function sort(){
+  scopus.sort(function(a, b){return dictScopus[b] - dictScopus[a]}); 
+  webOfScience.sort(function(a, b){return dictWebOf[b] - dictWebOf[a]}); 
+  draw(hdata);
 
+}
 const margin = { top: 30, right: 30, bottom: 300, left: 300 },
     width = 950 - margin.left - margin.right,
     height = 3300 - margin.top - margin.bottom;
@@ -117,21 +121,24 @@ function draw(paperdata) {
         .range(["white", "darkGreen"])
         .domain([0, 350])
 
-    // create a tooltip
 
-
-    //Read the data
-    //d3.csv("data/heat.csv").then(function (data) {
-
-    svg.selectAll("rect")
-        .data(paperdata)//, function (d) { return d. + ':' + d.webOfScience; })
-        .enter()
-        .append("rect")
-        .attr("x", function (d) { return x(d[0]) })
+    var hspots = svg.selectAll("rect")
+        .data(paperdata)
+    
+    hspots.enter()
+    .append("rect")
+    .attr("x", function (d) { return x(d[0]) })
         .attr("y", function (d) { return y(d[1]) })
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("fill", function (d) {return myColor(d[2]) })
+        .style("stroke", "black")
+        .attr("stroke-width",  function(d) { if(d[2]>0){return 0.1}else{return 0} })
+    
+    hspots
+    .transition()
+    .duration(1000)
+    .attr("x", function (d) { return x(d[0]) })
+    .attr("y", function (d) { return y(d[1]) })
 
-    //})
 }
