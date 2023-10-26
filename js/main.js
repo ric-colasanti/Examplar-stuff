@@ -46,7 +46,9 @@ var dictScopus = {}
 var dictWebOf = {}
 let scopus = []
 let webOfScience = []
-hdata=[]
+let hdata=[]
+let wosSelect = ["Statistics & Probability","Mathematics","Construction & Building Technology","Meteorology & Atmospheric Sciences","Engineering- Manufacturing","Remote Sensing","Engineering- Civil","Water Resources","Computer Science- Information Systems","Computer Science- Interdisciplinary Applications","Mathematics- Interdisciplinary Applications","Chemistry- Analytical","Computer Science- Cybernetics","Neurosciences","Physics- Applied","Computer Science- Artificial Intelligence","Engineering- Mechanical","Telecommunications","Computer Science- Theory & Methods","Computer Science- Software Engineering","Energy & Fuels","Imaging Science & Photographic Technology","Computer Science- Hardware & Architecture","Engineering- Multidisciplinary","Engineering- Electrical & Electronic","Automation & Control Systems","Mathematics- Applied"]
+let scopusSelect=["Computer-Science","Health-Professions","Earth and Planetary-Sciences","Energy","Multidisciplinary","Mathematics","Environmental-Science","Agricultural and Biological-Sciences","Nursing","Social-Science","Arts and Humanities","Decision-Sciences"]
 d3.csv("data/heat.csv", function(data){
   if(!(scopus.includes(data.scopus))){
     scopus.push(data.scopus)
@@ -117,8 +119,11 @@ function draw(paperdata) {
         .call(d3.axisLeft(y))
 
     // Build color scale
-    const myColor = d3.scaleLinear()
+    const exaNotSelect = d3.scaleLinear()
         .range(["white", "darkGreen"])
+        .domain([0, 350])
+    const exaSelect = d3.scaleLinear()
+        .range(["white", "purple"])
         .domain([0, 350])
 
 
@@ -131,9 +136,11 @@ function draw(paperdata) {
         .attr("y", function (d) { return y(d[1]) })
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) {return myColor(d[2]) })
+        .style("fill", function (d) { if ((scopusSelect.includes(d[0]))&&( wosSelect.includes(d[1]))){
+          return exaSelect(d[2])
+        }return exaNotSelect(d[2]) })
         .style("stroke", "black")
-        .attr("stroke-width",  function(d) { if(d[2]>0){return 0.1}else{return 0} })
+        .attr("stroke-width",  function(d) { if(d[2]>0){ if ((scopusSelect.includes(d[0]))&&( wosSelect.includes(d[1]))){return 0.4}return 0.1}else{return 0} })
     
     hspots
     .transition()
